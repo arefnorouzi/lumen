@@ -13,10 +13,7 @@ class CategoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
-       // include __DIR__.'/routes/web.php';
         $this->app->make('Modules\CategoryPack\CategoryController');
-
     }
 
     /**
@@ -26,7 +23,6 @@ class CategoryServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //dd('It works...');
         $this->loadViewsFrom(__DIR__.'/views', 'category');
         $this->loadRoutesFrom(__DIR__.'/routes/web.php');
         $this->loadMigrationsFrom(__DIR__.'/migrations');
