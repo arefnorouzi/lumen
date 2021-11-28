@@ -19,10 +19,7 @@ class CategoryController extends Controller
     public function index()
     {
         $model = $this->category->records();
-        return response()->json([
-            'status' => true,
-            'model' => $model
-        ],200,['header'=> 'Content-Type', $this->content_type]);
+        $this->returnData(true, $model);
     }
 
 
@@ -32,12 +29,16 @@ class CategoryController extends Controller
     public function show($id)
     {
         $model = $this->category->show($id);
-        return response()->json([
-            'status' => true,
-            'model' => $model
-        ],200,['header'=> 'Content-Type', $this->content_type]);
+        if ($model)
+        {
+            $this->returnData(true, $model);
+        }
+        $this->returnData(false, [],'not found',404);
     }
 
+    /**
+     * @param Request $request
+     */
     public function store(Request $request)
     {
         //validate
@@ -47,10 +48,7 @@ class CategoryController extends Controller
             'parent' => 'required|numeric',
         ]);
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors(),
-            ],200,['header'=> 'Content-Type', $this->content_type]);
+            $this->returnData(false, [],$validator->errors(), 500);
         }
 
         $this->category->cat_title = $request->title;
@@ -58,24 +56,51 @@ class CategoryController extends Controller
         $this->category->parent_id = $request->parent;
         if ($this->category->save())
         {
-            return response()->json([
-                'status' => true,
-                'model' => $this->category
-            ],200,['header'=> 'Content-Type', $this->content_type]);
+            $this->returnData(true, $this->category);
         }
-        return response()->json([
-            'status' => false,
-            'message' => 'incorrect request',
-        ],200,['header'=> 'Content-Type', $this->content_type]);
+        $this->returnData(false, [],'incorrect request', 500);
+
     }
 
+    /**
+     * @param $id
+     */
     public function edit($id)
     {
-
+        $model = $this->category->findWithTrashed($id);
+        if ($model)
+        {
+            $this->returnData(true, $model);
+        }
+        $this->returnData(false, [],'not found',404);
     }
 
     public function update(Request $request, $id)
     {
+        //validate
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|min:5|max:70',
+            'slug' => 'required|string|min:3|max:150',
+            'parent' => 'required|numeric',
+        ]);
+        if ($validator->fails()) {
+            $this->returnData(false, [],$validator->errors(), 500);
+        }
+
+        $model = $this->category->findWithTrashed($id);
+        if (!$model)
+        {
+            $this->returnData(false, [],'not found',404);
+        }
+
+        $model->cat_title = $request->title;
+        $model->cat_slug = $request->slug;
+        $model->parent_id = $request->parent;
+        if ($model->update())
+        {
+            $this->returnData(true, $model,'success update');
+        }
+        $this->returnData(false, [],'incorrect request', 500);
 
     }
 
@@ -87,26 +112,32 @@ class CategoryController extends Controller
         $model = $this->category->findWithTrashed($id);
         if (!$model)
         {
-            return response()->json([
-                'status' => false,
-                'message' => 'not found'
-            ],404,['header'=> 'Content-Type', $this->content_type]);
+            $this->returnData(false, [],'not found',404);
         }
         if ($model->deleted_at)
         {
             $model->restore();
-            return response()->json([
-                'status' => true,
-                'message' => 'restore',
-                'model' => $model
-            ],200,['header'=> 'Content-Type', $this->content_type]);
+            $this->returnData(true, $model,'success restore');
         }
         $model->delete();
+        $this->returnData(true, $model,'success delete');
+    }
+
+
+    /**
+     * @param $status
+     * @param $model
+     * @param null $message
+     * @param int $status_code
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function returnData($status, $model, $message = null, $status_code = 200)
+    {
         return response()->json([
-            'status' => true,
-            'message' => 'delete',
+            'status' => $status,
+            'message' => $message,
             'model' => $model
-        ],200,['header'=> 'Content-Type', $this->content_type]);
+        ],$status_code,['header'=> 'Content-Type', $this->content_type]);
     }
 
 
