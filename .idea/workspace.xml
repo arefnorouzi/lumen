@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="ab544d46-78d2-430a-b686-bc25a3e0438c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/protected/packages/modules/category-pack/src/Category.php" beforeDir="false" afterPath="$PROJECT_DIR$/protected/packages/modules/category-pack/src/Category.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/protected/packages/modules/category-pack/src/CategoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/protected/packages/modules/category-pack/src/CategoryController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/protected/packages/modules/category-pack/src/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/protected/packages/modules/category-pack/src/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,7 +170,7 @@
       <updated>1637133470579</updated>
       <workItem from="1637133472831" duration="105000" />
       <workItem from="1638040196632" duration="17797000" />
-      <workItem from="1638088574118" duration="1841000" />
+      <workItem from="1638088574118" duration="4665000" />
     </task>
     <servers />
   </component>

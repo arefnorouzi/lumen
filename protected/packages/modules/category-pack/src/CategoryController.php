@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 class CategoryController extends Controller
 {
     private $category;
-    private $content_type = 'json';
+    private $content_type = 'application/json';
     public function __construct()
     {
         $this->category = new Category();
@@ -19,7 +19,7 @@ class CategoryController extends Controller
     public function index()
     {
         $model = $this->category->records();
-        $this->returnData(true, $model);
+        return $this->returnData(true, $model);
     }
 
 
@@ -28,12 +28,12 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        $model = $this->category->show($id);
+        $model = $this->category->find($id);
         if ($model)
         {
-            $this->returnData(true, $model);
+            return $this->returnData(true, $model);
         }
-        $this->returnData(false, [],'not found',404);
+        return $this->returnData(false, [],'not found',404);
     }
 
     /**
@@ -45,10 +45,10 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|min:5|max:70',
             'slug' => 'required|string|min:3|max:150',
-            'parent' => 'required|numeric',
+            'parent' => 'numeric',
         ]);
         if ($validator->fails()) {
-            $this->returnData(false, [],$validator->errors(), 500);
+            return $this->returnData(false, [],$validator->errors(), 500);
         }
 
         $this->category->cat_title = $request->title;
@@ -56,9 +56,9 @@ class CategoryController extends Controller
         $this->category->parent_id = $request->parent;
         if ($this->category->save())
         {
-            $this->returnData(true, $this->category);
+            return $this->returnData(true, $this->category,'success store');
         }
-        $this->returnData(false, [],'incorrect request', 500);
+        return $this->returnData(false, [],'incorrect request', 500);
 
     }
 
@@ -70,9 +70,9 @@ class CategoryController extends Controller
         $model = $this->category->findWithTrashed($id);
         if ($model)
         {
-            $this->returnData(true, $model);
+            return $this->returnData(true, $model);
         }
-        $this->returnData(false, [],'not found',404);
+        return $this->returnData(false, [],'not found',404);
     }
 
     public function update(Request $request, $id)
@@ -81,16 +81,16 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|min:5|max:70',
             'slug' => 'required|string|min:3|max:150',
-            'parent' => 'required|numeric',
+            'parent' => 'numeric',
         ]);
-        if ($validator->fails()) {
-            $this->returnData(false, [],$validator->errors(), 500);
-        }
 
-        $model = $this->category->findWithTrashed($id);
+        if ($validator->fails()) {
+            return $this->returnData(false, [],$validator->errors(), 500);
+        }
+        $model = $this->category->find($id);
         if (!$model)
         {
-            $this->returnData(false, [],'not found',404);
+            return $this->returnData(false, [],'not found',404);
         }
 
         $model->cat_title = $request->title;
@@ -98,9 +98,9 @@ class CategoryController extends Controller
         $model->parent_id = $request->parent;
         if ($model->update())
         {
-            $this->returnData(true, $model,'success update');
+            return $this->returnData(true, $model,'success update');
         }
-        $this->returnData(false, [],'incorrect request', 500);
+        return $this->returnData(false, [],'incorrect request', 500);
 
     }
 
@@ -109,18 +109,18 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $model = $this->category->findWithTrashed($id);
+        $model = $this->category->find($id);
         if (!$model)
         {
-            $this->returnData(false, [],'not found',404);
+            return $this->returnData(false, [],'not found',404);
         }
         if ($model->deleted_at)
         {
             $model->restore();
-            $this->returnData(true, $model,'success restore');
+            return $this->returnData(true, $model,'success restore');
         }
         $model->delete();
-        $this->returnData(true, $model,'success delete');
+        return $this->returnData(true, $model,'success delete');
     }
 
 
@@ -131,7 +131,7 @@ class CategoryController extends Controller
      * @param int $status_code
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function returnData($status, $model, $message = null, $status_code = 200)
+    public function returnData($status, $model, $message = null, $status_code = 200)
     {
         return response()->json([
             'status' => $status,

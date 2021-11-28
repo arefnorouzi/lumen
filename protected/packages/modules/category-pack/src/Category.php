@@ -2,7 +2,6 @@
 
 namespace Modules\CategoryPack;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -17,11 +16,6 @@ class Category extends Model
     public function __construct()
     {
         //
-    }
-
-    public function show($id)
-    {
-        return Category::find($id);
     }
 
     public function findWithTrashed($id)
